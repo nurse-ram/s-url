@@ -3,38 +3,36 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>RUNS Admin Gateway</title>
+  <title>RUNS Short URL Gateway</title>
   <link rel="icon" href="favicon.ico">
   <link rel="stylesheet" href="style.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="config.js"></script>
 </head>
 <body>
-  <main class="login-gateway">
-    <section class="gateway-copy" aria-label="RUNS Short URL">
-      <div class="gateway-brand">
-        <img src="logo.png" alt="RUNS" onerror="this.style.display='none'">
-        <span>RUNS LINK GATEWAY</span>
-      </div>
-      <h1>RUNS URL Shortener</h1>
+  <main class="gateway">
+    <section class="hero">
+      <div class="logo-box"><img src="logo.png" alt="RUNS" onerror="this.style.display='none'"></div>
+      <h1><span>RUNS</span> URL Shortener</h1>
       <p>บริการย่อลิงก์สำหรับคณะพยาบาลศาสตร์ มหาวิทยาลัยรามคำแหง จัดการลิงก์ให้สั้น จำง่าย และติดตามการใช้งานได้รวดเร็ว</p>
     </section>
 
-    <section class="login-panel" aria-label="เข้าสู่ระบบจัดการลิงก์">
-      <div class="panel-heading">
-        <div class="bolt">↗</div>
-        <div>
-          <h2>เข้าสู่ระบบจัดการลิงก์</h2>
-          <p>เข้าสู่ระบบด้วยบัญชี Google ผ่าน Google Apps Script</p>
-        </div>
+    <section class="panel">
+      <div class="panel-head">
+        <div class="mark">↗</div>
+        <h2>เข้าสู่ระบบจัดการลิงก์</h2>
       </div>
-
-      <button class="google-login-btn" id="loginBtn" type="button">
-        <span class="google-mark">G</span>
-        เข้าสู่ระบบด้วย Google
-      </button>
-      <p class="status" id="statusText">กดปุ่มเพื่อเปิดหน้าจัดการ ระบบ Google Apps Script จะตรวจสอบบัญชี Google ให้</p>
+      <div id="googleButton" class="google-slot"></div>
+      <p class="hint">อนุญาตเฉพาะบัญชี @rumail.ru.ac.th หรือบัญชีที่มีรายชื่อในชีต USERS</p>
+      <p class="status" id="statusText"></p>
     </section>
   </main>
 
-  <script type="module" src="script.js"></script>
+  <footer class="footer">
+    <strong>สงวนสิทธิ์ คณะพยาบาลศาสตร์ มหาวิทยาลัยรามคำแหง</strong>
+    <span>RUNS Short URL</span>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>

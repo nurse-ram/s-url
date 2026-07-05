@@ -1,12 +1,59 @@
-const ADMIN_APP_URL = 'https://script.google.com/a/macros/rumail.ru.ac.th/s/AKfycbwmm9iQvuCjpSIHJPrl2nkMmIpE0yYly_XnXYf9FJnNnVft-VOTyJ6gFieB-n2_ZkD4BA/exec';
+(function(){
+  const cfg = window.RUNS_AUTH_CONFIG || {};
+  const statusText = document.getElementById('statusText');
 
-const loginBtn = document.getElementById('loginBtn');
-const statusText = document.getElementById('statusText');
+  function setStatus(message, isError){
+    statusText.textContent = message || '';
+    statusText.classList.toggle('error', !!isError);
+  }
 
-loginBtn.addEventListener('click', () => {
-  loginBtn.disabled = true;
-  loginBtn.innerHTML = '<span class="google-mark">G</span> กำลังเปิด Google Apps Script...';
-  statusText.classList.remove('error');
-  statusText.textContent = 'กำลังพาไปหน้าจัดการ ระบบ Google Apps Script จะตรวจสอบบัญชี Google ให้';
-  window.location.href = ADMIN_APP_URL;
-});
+  function decodeJwt(token){
+    const payload = token.split('.')[1] || '';
+    const json = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+    return JSON.parse(decodeURIComponent(Array.from(json).map(c => '%' + c.charCodeAt(0).toString(16).padStart(2, '0')).join('')));
+  }
+
+  function handleCredential(response){
+    try{
+      const credential = response && response.credential;
+      if(!credential) throw new Error('ไม่พบข้อมูลยืนยันตัวตน');
+      const profile = decodeJwt(credential);
+      const email = String(profile.email || '').toLowerCase();
+      const domain = email.split('@')[1] || '';
+      if(domain !== cfg.ALLOWED_DOMAIN){
+        setStatus('บัญชีนี้ไม่ใช่ @' + cfg.ALLOWED_DOMAIN + ' ระบบจะให้ Apps Script ตรวจรายชื่อในชีต USERS ต่อ', false);
+      }else{
+        setStatus('ยืนยันบัญชี RUMAIL แล้ว กำลังเปิดระบบ...', false);
+      }
+      const url = cfg.APPS_SCRIPT_URL + (cfg.APPS_SCRIPT_URL.indexOf('?') >= 0 ? '&' : '?') + 'token=' + encodeURIComponent(credential);
+      window.location.href = url;
+    }catch(err){
+      setStatus(err.message || String(err), true);
+    }
+  }
+
+  window.addEventListener('load', () => {
+    if(!cfg.GOOGLE_CLIENT_ID || cfg.GOOGLE_CLIENT_ID.indexOf('PASTE_') === 0){
+      setStatus('กรุณาใส่ GOOGLE_CLIENT_ID ใน config.js ก่อนใช้งาน', true);
+      return;
+    }
+    if(!window.google || !google.accounts || !google.accounts.id){
+      setStatus('โหลด Google Sign-In ไม่สำเร็จ กรุณารีเฟรชหน้าอีกครั้ง', true);
+      return;
+    }
+    google.accounts.id.initialize({
+      client_id: cfg.GOOGLE_CLIENT_ID,
+      callback: handleCredential,
+      auto_select: false,
+      cancel_on_tap_outside: true
+    });
+    google.accounts.id.renderButton(document.getElementById('googleButton'), {
+      type: 'standard',
+      theme: 'filled_blue',
+      size: 'large',
+      text: 'signin_with',
+      shape: 'rectangular',
+      width: 360
+    });
+  });
+})();
