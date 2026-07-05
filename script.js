@@ -44,19 +44,8 @@
       isSubmitting = false;
     }, 15000);
 
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = cfg.APPS_SCRIPT_URL;
-    form.style.display = 'none';
-
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'token';
-    input.value = credential;
-    form.appendChild(input);
-
-    document.body.appendChild(form);
-    form.submit();
+    const joiner = cfg.APPS_SCRIPT_URL.indexOf('?') >= 0 ? '&' : '?';
+    window.location.replace(cfg.APPS_SCRIPT_URL + joiner + 'token=' + encodeURIComponent(credential));
   }
 
   function setLoginBusy(busy){
