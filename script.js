@@ -25,11 +25,26 @@
       }else{
         setStatus('ยืนยันบัญชี RUMAIL แล้ว กำลังเปิดระบบ...', false);
       }
-      const url = cfg.APPS_SCRIPT_URL + (cfg.APPS_SCRIPT_URL.indexOf('?') >= 0 ? '&' : '?') + 'token=' + encodeURIComponent(credential);
-      window.location.href = url;
+      submitToken(credential);
     }catch(err){
       setStatus(err.message || String(err), true);
     }
+  }
+
+  function submitToken(credential){
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = cfg.APPS_SCRIPT_URL;
+    form.style.display = 'none';
+
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'token';
+    input.value = credential;
+    form.appendChild(input);
+
+    document.body.appendChild(form);
+    form.submit();
   }
 
   window.addEventListener('load', () => {
