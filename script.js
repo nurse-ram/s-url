@@ -81,13 +81,14 @@
       auto_select: false,
       cancel_on_tap_outside: true
     });
+    const buttonWidth = Math.min(360, Math.max(220, googleButton.clientWidth || 320));
     google.accounts.id.renderButton(googleButton, {
       type: 'standard',
       theme: 'filled_blue',
       size: 'large',
       text: 'signin_with',
       shape: 'rectangular',
-      width: 360
+      width: buttonWidth
     });
   });
 })();
