@@ -1,6 +1,9 @@
 (function(){
   const cfg = window.RUNS_AUTH_CONFIG || {};
   const statusText = document.getElementById('statusText');
+  const googleButton = document.getElementById('googleButton');
+  let isSubmitting = false;
+  let submitTimer = null;
 
   function setStatus(message, isError){
     statusText.textContent = message || '';
@@ -15,6 +18,7 @@
 
   function handleCredential(response){
     try{
+      if(isSubmitting) return;
       const credential = response && response.credential;
       if(!credential) throw new Error('ไม่พบข้อมูลยืนยันตัวตน');
       const profile = decodeJwt(credential);
@@ -32,6 +36,14 @@
   }
 
   function submitToken(credential){
+    isSubmitting = true;
+    setLoginBusy(true);
+    submitTimer = setTimeout(() => {
+      setStatus('กำลังเปิดระบบ หากหน้านี้ค้างนานเกินไปให้รีเฟรชแล้วเข้าสู่ระบบใหม่', true);
+      setLoginBusy(false);
+      isSubmitting = false;
+    }, 15000);
+
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = cfg.APPS_SCRIPT_URL;
@@ -45,6 +57,13 @@
 
     document.body.appendChild(form);
     form.submit();
+  }
+
+  function setLoginBusy(busy){
+    if(!googleButton) return;
+    googleButton.classList.toggle('is-busy', busy);
+    googleButton.style.pointerEvents = busy ? 'none' : '';
+    googleButton.setAttribute('aria-busy', busy ? 'true' : 'false');
   }
 
   window.addEventListener('load', () => {
@@ -62,7 +81,7 @@
       auto_select: false,
       cancel_on_tap_outside: true
     });
-    google.accounts.id.renderButton(document.getElementById('googleButton'), {
+    google.accounts.id.renderButton(googleButton, {
       type: 'standard',
       theme: 'filled_blue',
       size: 'large',
