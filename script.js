@@ -81,7 +81,8 @@
       auto_select: false,
       cancel_on_tap_outside: true
     });
-    const buttonWidth = Math.min(360, Math.max(220, googleButton.clientWidth || 320));
+    const slotWidth = Math.floor(googleButton.getBoundingClientRect().width || (window.innerWidth - 56));
+    const buttonWidth = Math.min(340, Math.max(200, slotWidth));
     google.accounts.id.renderButton(googleButton, {
       type: 'standard',
       theme: 'filled_blue',
